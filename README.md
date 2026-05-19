@@ -12,13 +12,22 @@
 
 ## 使用方式
 
+### 1. 克隆仓库
+
+```bash
+git clone https://github.com/SpaceTrave1/weread-deep-insights.git
+cd weread-deep-insights
+```
+
 先设置 `WEREAD_API_KEY` 环境变量，或在项目根目录创建本地 `.env` 文件：
 
 ```bash
 WEREAD_API_KEY=your_api_key
 ```
 
-运行生成器：
+### 2. 本地运行
+
+本工具只依赖 Python 标准库，不需要安装第三方 Python 包。配置好 `WEREAD_API_KEY` 后，直接运行生成器：
 
 ```bash
 python scripts/generate_deep_report.py --format both --output-dir ./weread-reports
@@ -32,6 +41,24 @@ python scripts/generate_deep_report.py \
   --output-dir ./weread-reports \
   --title "我的微信读书深度画像"
 ```
+
+### 3. 在 AI Agent 应用中运行
+
+这个仓库包含 `SKILL.md` 和 `agents/openai.yaml`，可以作为本地 skill/工具项目被支持本地仓库、文件读写和命令执行的 AI Agent 应用使用，例如 WorkBuddy、OpenClaw、Codex，以及其他兼容本地 skill 或可执行 shell 命令的应用。
+
+如果应用支持读取本地 skill，可以让它使用本仓库执行微信读书数据分析；如果应用不支持 `SKILL.md`，也可以让它在仓库根目录直接运行：
+
+```bash
+python scripts/generate_deep_report.py --format both --output-dir ./weread-reports
+```
+
+不同应用的 skill 自动发现机制可能不同，但本项目的核心能力不依赖特定客户端。只要应用能访问仓库文件、读取环境变量并执行 Python 命令，就可以调用本工具。
+
+### 4. 是否需要大模型
+
+直接运行 `scripts/generate_deep_report.py` 不需要调用大模型，也不需要 OpenAI API Key。脚本会通过 `WEREAD_API_KEY` 拉取微信读书个人数据，然后使用本地规则、统计和模板生成 Markdown/HTML 报告。
+
+大模型应用只负责更方便地触发、解释或二次编辑报告；当前脚本本身的数据分析过程是本地确定性逻辑。
 
 ## 输出
 
