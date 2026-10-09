@@ -6,7 +6,7 @@ from datetime import datetime, timezone, timedelta
 
 API_URL = "https://i.weread.qq.com/api/agent/gateway"
 
-SKILL_VERSION = "1.0.3"
+SKILL_VERSION = "1.0.4"
 
 CN_TZ = timezone(timedelta(hours=8))
 

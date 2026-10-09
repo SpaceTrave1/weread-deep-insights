@@ -125,7 +125,8 @@ def collect_reviews(client: WeReadClient, book_id: str) -> List[Dict[str, Any]]:
             review = item.get("review") or {}
             key = review.get("reviewId") or item.get("reviewId")
             if isinstance(review.get("content"), str) and clean_text(review["content"]) and (not key or key not in seen_reviews):
-                reviews.append(review)
+                # Keep the source identity even when supplied by the outer envelope.
+                reviews.append(dict(review, reviewId=key) if key else review)
                 if key:
                     seen_reviews.add(key)
         if int(page.get("hasMore") or 0) != 1:
@@ -160,10 +161,12 @@ def collect_book_notes(client: WeReadClient, notebooks: List[Dict[str, Any]], ma
             for row in as_list(bookmark_data.get("updated")):
                 if isinstance(row.get("markText"), str) and clean_text(row["markText"]):
                     underlines.append({
+                        "bookmarkId": row.get("bookmarkId"),
                         "text": clean_text(row.get("markText")),
                         "chapterUid": row.get("chapterUid"),
                         "chapterTitle": chapters.get(str(row.get("chapterUid")), ""),
                         "createTime": row.get("createTime"),
+                        "updateTime": row.get("updateTime"),
                         "range": row.get("range"),
                     })
             statuses["underlines"] = fetch_state(underlines)

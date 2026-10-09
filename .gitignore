@@ -15,3 +15,6 @@ llm_insights*.json
 llm_partials*.json
 .llm-cache/
 llm-evaluation-results/
+.weread-history/
+history.sqlite3*
+evolution-*.json
