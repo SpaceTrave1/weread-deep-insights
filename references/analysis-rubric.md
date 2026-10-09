@@ -36,11 +36,23 @@ Prefer personal reviews for quoted evidence. Underlines may contain copyrighted 
 
 ## Strict Diagnosis Mode
 
-- Be direct about weak signals: low completion, over-commenting, theme bias, abstraction-heavy writing, weak action transfer.
+- Describe observed completion or text concentration with explicit denominators. Completion does not prove discipline, review proportion does not prove expression quality, and growth keywords do not prove action transfer.
 - Keep the tone witty and concise, not abusive.
 - Criticize patterns and habits, not the person's worth.
 - Tie every harsh claim to behavior in the data.
 - Use one short disclaimer before the section; do not apologize repeatedly.
+
+## v0.2 Phase 1 Evidence Gates
+
+- Profile summary requires at least 5 valid personal reviews across at least 2 book IDs. Each named thinking signal additionally requires at least 3 matched personal reviews across 2 books. Title-only and underline-only signals cannot produce a personal profile.
+- Profile theme names require at least 3 matched personal reviews across 2 books. Theme tables may still expose title/text keyword signals, labeled as such.
+- Value tables require at least 3 matched personal reviews across 2 books and weighted keyword score at least 15; these are vocabulary attention signals, not confirmed values, anxieties, or long-term plans.
+- Category concentration requires positive category time and at least 5 books in the returned category counts. Its denominator is only the API's returned categories, whose completeness is not guaranteed.
+- Theme concentration requires a completed notebook directory, successful or empty requests for every known book and note stream, valid text totals matching the directory counts, no sampling option, at least 5 matched texts for the leading theme, and texts across at least 2 books.
+- Cocoon score is the arithmetic mean of available leading category/theme percentages. Levels retain heuristic cutoffs 42/68 for continuity; neither cutoffs nor sample minimums are scientifically validated. No evidence means `None`, never a low-risk conclusion. Concentration cannot confirm information cocoon without viewpoint/exposure data.
+- Expression metric is reviews / (reviews + underlines) × 100, only with completed note coverage and at least 5 valid texts. Completion metric is official finished / read × 100, only with at least 5 read books and valid counts. Balance metric is 100 minus the leading returned category percentage, only with sufficient categories. All are observed proxies, not ability evaluations.
+- Question quality, real-world sensitivity and action execution have no supported quantitative measurements and remain unscored. Blind-spot output is limited to conditional, checkable coverage/unfinished-record risks; no emotional or motivational diagnosis.
+- Successful partial-page records may be used as observed evidence, but their stream remains failed/incomplete. Every inference is limited to the fetched sample, and missing data must not be replaced with a confident conclusion.
 
 ## Publishable Generalization
 

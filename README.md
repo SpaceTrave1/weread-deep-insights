@@ -11,6 +11,8 @@
 - 基于个人笔记和点评抽取证据片段，避免只靠关键词做空泛判断。
 - 评估信息茧房风险，并给出基于数据的阅读、写作、思考和行动建议。
 - 输出自包含 HTML 报告和 Markdown 报告。
+- 区分请求成功、成功但为空、失败、未请求及旧数据状态未知，展示采集和文本覆盖情况。
+- 证据不足时不归纳画像、不诊断盲区、不评分；可计算分数仅表示明示的观察比例。
 
 ## 使用方式
 
@@ -93,9 +95,24 @@ agents/                 OpenAI/Codex skill metadata
 assets/                 HTML report template
 references/             分析口径与 API 覆盖说明
 scripts/                报告生成脚本
+tests/                  仅合成数据的离线单元测试、回归快照和 CLI 测试
 SKILL.md                Codex skill instruction
 ```
 
 ## 依赖
 
 只依赖 Python 标准库，不需要安装第三方 Python 包。
+
+## 离线可靠性测试
+
+从仓库根目录运行：
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+测试只使用虚构书籍、点评、划线和模拟 API 响应，不需要 API Key，不读取 `.env`，禁止网络请求。输出测试使用 `tests/` 内的临时目录并自动清理；回归快照 `tests/snapshots/analysis.json` 也完全来自合成数据。
+
+原有命令、参数和输出文件名保持不变。`scripts/generate_deep_report.py` 保留 CLI 与原有函数导出，内部逐步分为 `collection.py`（获取）、`analysis.py`（分析）、`rendering.py`（渲染），以及共享工具和覆盖口径模块。内部测试或调用者若要替换传输/环境加载，应在 `scripts.collection` 中注入模拟对象。
+
+v0.2 第一阶段会改变部分报告内容和评分口径：缺少依据的分数为 `None`，两种报告显示“暂不评分”；部分获取结果只描述本次可见数据。依赖旧固定分数或报告原文的外部程序需要调整。具体问题、证据条件和验证记录见 [变更说明](references/v0.2-phase1-changes.md)。

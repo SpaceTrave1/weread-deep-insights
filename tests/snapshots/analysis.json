@@ -1,0 +1,358 @@
+{
+  "title": "合成回归报告",
+  "generatedAt": "2026-01-01T00:00:00+08:00",
+  "profileSummary": {
+    "label": "画像证据不足",
+    "tagline": "暂不归纳读者类型或稳定性格；关键词与书名只能提供文本线索。",
+    "keywords": []
+  },
+  "coverage": {
+    "groups": {
+      "汇总与目录": {
+        "success": 3,
+        "empty": 2,
+        "failed": 0,
+        "not_requested": 0,
+        "unknown": 0,
+        "expected": 5,
+        "requested": 5
+      },
+      "年度统计": {
+        "success": 1,
+        "empty": 0,
+        "failed": 0,
+        "not_requested": 0,
+        "unknown": 0,
+        "expected": 1,
+        "requested": 1
+      },
+      "划线": {
+        "success": 2,
+        "empty": 0,
+        "failed": 0,
+        "not_requested": 0,
+        "unknown": 0,
+        "expected": 2,
+        "requested": 2
+      },
+      "点评": {
+        "success": 2,
+        "empty": 0,
+        "failed": 0,
+        "not_requested": 0,
+        "unknown": 0,
+        "expected": 2,
+        "requested": 2
+      },
+      "进度": {
+        "success": 0,
+        "empty": 0,
+        "failed": 0,
+        "not_requested": 2,
+        "unknown": 0,
+        "expected": 2,
+        "requested": 0
+      },
+      "书籍详情": {
+        "success": 0,
+        "empty": 0,
+        "failed": 0,
+        "not_requested": 2,
+        "unknown": 0,
+        "expected": 2,
+        "requested": 0
+      }
+    },
+    "totals": {
+      "success": 8,
+      "empty": 2,
+      "failed": 0,
+      "not_requested": 4,
+      "unknown": 0
+    },
+    "notesComplete": true,
+    "scope": "仅分析本次成功获取的可见数据；4 个已知采集单元未请求",
+    "expectedUnderlines": 3,
+    "expectedReviews": 2,
+    "exportedUnderlines": 3,
+    "exportedReviews": 2,
+    "notebookDirectoryStatus": "success"
+  },
+  "evidenceConditions": {
+    "personalSufficient": false,
+    "categorySufficient": true,
+    "themeSufficient": false
+  },
+  "basis": {
+    "totalReadTime": "2 小时 0 分钟",
+    "officialStatsAvailable": true,
+    "timeAvailable": true,
+    "daysAvailable": true,
+    "bookCountsAvailable": true,
+    "notesAvailable": false,
+    "readDays": 3,
+    "booksRead": 10,
+    "booksFinished": 4,
+    "notes": 6,
+    "shelfTotal": 2,
+    "shelfBooks": 2,
+    "albums": 0,
+    "mpCount": 0,
+    "notebookBooks": 2,
+    "exportedBooks": 2,
+    "exportedUnderlines": 3,
+    "exportedReviews": 2,
+    "progressRows": 0,
+    "bookInfoRows": 0,
+    "limited": false
+  },
+  "annual": [
+    {
+      "year": 2026,
+      "seconds": 7200,
+      "hours": 2.0,
+      "readDays": 3
+    }
+  ],
+  "categories": [
+    {
+      "name": "合成科学",
+      "parent": "",
+      "seconds": 3600,
+      "hours": 1.0,
+      "books": 5
+    },
+    {
+      "name": "合成文学",
+      "parent": "",
+      "seconds": 3600,
+      "hours": 1.0,
+      "books": 5
+    }
+  ],
+  "readLongest": [],
+  "topNoteBooks": [
+    {
+      "title": "合成科学甲",
+      "author": "虚构作者甲",
+      "notes": 4,
+      "reviews": 1,
+      "underlines": 2
+    },
+    {
+      "title": "合成文学乙",
+      "author": "虚构作者乙",
+      "notes": 2,
+      "reviews": 1,
+      "underlines": 1
+    }
+  ],
+  "themes": [
+    {
+      "name": "科学、技术与文明探索",
+      "score": 8,
+      "question": "技术进步和科学探索会把人类带向哪里？",
+      "evidence": [
+        {
+          "title": "合成科学甲",
+          "kind": "划线",
+          "text": "科学研究需要比较数据。"
+        },
+        {
+          "title": "合成文学乙",
+          "kind": "划线",
+          "text": "科学研究需要比较数据。"
+        }
+      ],
+      "matchedItems": 3,
+      "matchedBookCount": 2,
+      "personalMatchedItems": 0,
+      "personalBookCount": 0,
+      "source": "文本及书名关键词线索，不能据此确认认同"
+    },
+    {
+      "name": "文学、人性与存在感受",
+      "score": 2,
+      "question": "文学如何照见人性、孤独、尊严和时代？",
+      "evidence": [],
+      "matchedItems": 0,
+      "matchedBookCount": 0,
+      "personalMatchedItems": 0,
+      "personalBookCount": 0,
+      "source": "文本及书名关键词线索，不能据此确认认同"
+    }
+  ],
+  "questions": [
+    "技术进步和科学探索会把人类带向哪里？"
+  ],
+  "styles": [
+    {
+      "name": "理性分析",
+      "score": 30,
+      "hits": 14,
+      "reviewHits": 8,
+      "underlineHits": 6,
+      "bookCount": 2,
+      "personalSufficient": false,
+      "evidence": [
+        {
+          "title": "合成科学甲",
+          "kind": "想法",
+          "text": "我的合成例句：比较模型的原因和结果。"
+        }
+      ],
+      "normalized": 100,
+      "level": "仅文本线索，个人证据不足"
+    },
+    {
+      "name": "技术/科学导向",
+      "score": 6,
+      "hits": 6,
+      "reviewHits": 0,
+      "underlineHits": 6,
+      "bookCount": 2,
+      "personalSufficient": false,
+      "evidence": [
+        {
+          "title": "合成科学甲",
+          "kind": "划线",
+          "text": "科学研究需要比较数据。"
+        }
+      ],
+      "normalized": 20,
+      "level": "仅文本线索，个人证据不足"
+    }
+  ],
+  "values": [],
+  "people": [
+    [
+      "虚构作者甲",
+      2
+    ],
+    [
+      "虚构作者乙",
+      2
+    ]
+  ],
+  "portrait": [
+    "暂不归纳读者类型或稳定性格；关键词与书名只能提供文本线索。",
+    "证据范围：2 条有效个人点评，来自 2 本书；仅分析本次成功获取的可见数据；4 个已知采集单元未请求。",
+    "划线是选择的原文，不等于本人主张；关键词不能识别否定、讽刺或引用，也不能诊断焦虑或稳定性格。"
+  ],
+  "strictNotice": "以下仅核对可观察指标；不足的数据不作诊断，分数不代表人格、能力或真实行动。",
+  "strictProfile": [
+    "官方完读比例 40.0%（4/10）；无法由此确认收尾纪律或停读原因。",
+    "本次有效点评占比 40%（2/5），仅指已取得文本，不代表表达质量或全账户比例。",
+    "第一分类占返回分类时长约 50%；这是分类集中信号，不能推断对陌生领域的态度。"
+  ],
+  "blindSpots": [
+    "可核查的覆盖风险：第一分类占返回分类时长 50%。可选读其他领域对照；这不证明知识盲区。",
+    "可核查的未完读记录：官方读过与读完相差 6 本；可检查停读原因，不能据此认定拖延。"
+  ],
+  "dimensionScores": [
+    {
+      "name": "问题意识",
+      "score": null,
+      "note": "关键词不能衡量提问质量，暂不评分。"
+    },
+    {
+      "name": "现实敏感度",
+      "score": null,
+      "note": "缺少现实行为验证，暂不评分。"
+    },
+    {
+      "name": "表达密度",
+      "score": 40,
+      "note": "仅衡量有效点评/有效文本：2/5；需笔记覆盖完整且至少 5 条，不评价表达质量。"
+    },
+    {
+      "name": "收尾纪律",
+      "score": 40,
+      "note": "仅衡量官方读完/读过：4/10；需至少读过 5 本且计数有效，不评价纪律。"
+    },
+    {
+      "name": "知识均衡",
+      "score": 50,
+      "note": "仅衡量 100 减最高返回分类时长占比；需至少 5 本分类记录，不评价知识掌握或完整性。"
+    },
+    {
+      "name": "行动落地",
+      "score": null,
+      "note": "未采集实际执行结果，暂不评分。"
+    }
+  ],
+  "informationCocoon": {
+    "level": "中等",
+    "score": 50,
+    "summary": "已获取数据的集中信号中等。分数是可用最高占比的算术均值，不是心理量表或信息茧房概率；缺少反方接触和认同数据，不能确认信息茧房。",
+    "signals": [
+      "最高阅读分类：合成科学，约占接口返回分类阅读时长 50%；接口分类可能不覆盖全部阅读。"
+    ],
+    "antidotes": [
+      "给最高频主题配一本真正反对它或绕开它的书，而不是只找补充材料。",
+      "每月安排一次“异质阅读”：文学、自然科学、艺术、身体经验任选其一，目的不是有用，而是打断惯性。",
+      "写笔记时加入一句“这条判断可能错在哪里”，让阅读系统自带反证入口。"
+    ]
+  },
+  "recommendedBooks": [
+    {
+      "title": "复杂",
+      "author": "梅拉妮·米歇尔",
+      "lane": "科学视角",
+      "why": "适合把复杂系统思维引入社会、技术和个体问题。"
+    },
+    {
+      "title": "技术与文明",
+      "author": "刘易斯·芒福德",
+      "lane": "技术批判",
+      "why": "避免把技术只看成效率工具，转而看它如何改变生活结构。"
+    },
+    {
+      "title": "卡拉马佐夫兄弟",
+      "author": "陀思妥耶夫斯基",
+      "lane": "人性深读",
+      "why": "用文学复杂性对冲过快的机制解释。"
+    },
+    {
+      "title": "局外人",
+      "author": "阿尔贝·加缪",
+      "lane": "存在感受",
+      "why": "适合训练不急着归因的阅读耐心。"
+    },
+    {
+      "title": "我们为什么要睡觉",
+      "author": "马修·沃克",
+      "lane": "身体补课",
+      "why": "提醒阅读和思考不能替代身体秩序。"
+    },
+    {
+      "title": "乡土中国",
+      "author": "费孝通",
+      "lane": "补结构",
+      "why": "补盲用： 用极短篇幅建立社会结构和基层秩序的基本框架。"
+    },
+    {
+      "title": "叫魂",
+      "author": "孔飞力",
+      "lane": "反直觉",
+      "why": "补盲用： 适合训练从事件进入制度、地方治理和群体心理的能力。"
+    },
+    {
+      "title": "政治秩序与政治衰败",
+      "author": "弗朗西斯·福山",
+      "lane": "拉长尺度",
+      "why": "补盲用： 把制度、国家能力和现代化放到更长周期里比较。"
+    }
+  ],
+  "sharperAdvice": {
+    "通用可选练习（非个人诊断）": [
+      "尝试记录一次阅读后的具体行动及结果；当前数据不能判断执行情况。"
+    ]
+  },
+  "suggestions": {
+    "通用可选练习（非个人诊断）": [
+      "写下阅读中的一个问题、支持证据和反例。",
+      "如需个人画像，可先补足个人点评证据。"
+    ]
+  }
+}

@@ -42,3 +42,12 @@ Do not include these in the personal profile by default:
 - `preferTime` is ordered from 06:00 through next-day 05:00.
 - `/user/notebooks` pagination uses `lastSort`, not offset.
 - If an API response contains `upgrade_info`, stop and surface the upgrade message.
+
+## v0.2 Phase 1 Collection Status
+
+- Per-book note results keep `underlines`/`reviews` for text and separate `fetchStatus`/`fetchErrors` for metadata. States are `success` (nonempty), `empty` (request succeeded without text), `failed`, and `not_requested` (derived for unselected/skipped/missing-ID entries). Legacy records without status are `unknown`, not assumed successful.
+- Progress and metadata rows also carry `fetchStatus`; empty and failed rows are excluded from successful export counts. Error metadata uses exception class names, not server error bodies or arbitrary exception messages.
+- Top-level `collectionStatus` tracks overall/weekly/monthly/shelf/notebook directory and annual requests. Non-upgrade failures keep other available data usable. Failed annual data is not rendered as zero reading time. Missing registration date means earlier years are unrequested and unknown in number.
+- Notebook/review pagination detects absent, repeated or cycling cursors and page-limit exhaustion. Interrupted pages retain already fetched rows and mark the stream failed. Repeated explicit book/review IDs are deduplicated. An upgrade response stops collection immediately without retries, including optional per-book calls.
+- Report `coverage.groups` counts logical endpoint/book/year units, not HTTP attempts or retry counts. Success, empty, failure, unrequested and unknown are separate. Skipped per-book endpoints have known denominators only when the parent directory is available; failed directories leave undiscovered counts unknown.
+- Text coverage compares valid exported underlines/reviews against the fetched notebook directory's `noteCount`/`reviewCount`. Bookmarks are excluded. A completed set of visible calls cannot guarantee all account records or semantic completeness; reports always describe the observed scope.

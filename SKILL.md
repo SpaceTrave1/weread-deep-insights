@@ -5,7 +5,7 @@ description: Generate evidence-based deep reading profile reports from WeRead/�
 
 # WeRead Deep Insights
 
-Create a deep reading profile from full WeRead personal records and notes. The skill exports all relevant personal reading data available through the WeRead Agent Gateway, analyzes actual note content rather than only counting keywords, and writes reports in HTML and Markdown.
+Create an evidence-scoped reading report from visible WeRead personal records and notes. The skill attempts relevant personal endpoints through the WeRead Agent Gateway, records collection coverage and failures, and writes HTML and Markdown. Keyword rules provide text signals, not semantic proof of personal beliefs or behavior.
 
 ## Quick Start
 
@@ -36,7 +36,7 @@ The report should emphasize:
 - Information-cocoon risk assessment and personalized antidotes based on theme/category concentration.
 - Personalized recommendation book list that skips books already visible in the user's records when possible.
 - Concise reading, writing, thinking, and personal growth suggestions.
-- A stricter personal diagnosis section with blind spots, dimension scores, and concrete execution advice.
+- A stricter evidence check with conditional coverage risks, observed dimension metrics, and optional execution exercises. Missing evidence must produce no conclusion or score.
 
 ## Workflow
 
@@ -53,7 +53,9 @@ The report should emphasize:
 - Fetch notebook pages with `lastSort`; do not use offset/limit.
 - For content analysis, combine `/book/bookmarklist` and `/review/list/mine`; prefer personal reviews for quoted evidence.
 - Reading time fields from `/readdata/detail` and `/book/getprogress` are seconds.
-- If the evidence is thin, say "只能初步推测" rather than overclaiming.
+- If evidence is insufficient, state "证据不足，暂不作结论/评分". Never infer personality, anxiety, action, or beliefs from keyword counts alone.
+- Always retain data coverage and failure statistics in both report formats. Sampling, skipped endpoints, partial pages, and unknown legacy status must not be described as complete analysis.
+- API failures are request metadata, never highlight/review text. A successful empty response is distinct from failure or an unrequested endpoint.
 - Avoid MBTI-style definitive personality labels. Use reading tendencies and evidence-backed behavioral language.
 - The strict analysis section may be blunt, but it must stay evidence-based and avoid insults or psychological diagnosis.
 
