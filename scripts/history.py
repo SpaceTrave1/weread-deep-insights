@@ -60,6 +60,8 @@ class HistoryStore:
             CREATE TABLE IF NOT EXISTS snapshots(id INTEGER PRIMARY KEY, observed TEXT NOT NULL, coverage TEXT NOT NULL);
             CREATE TABLE IF NOT EXISTS versions(id TEXT PRIMARY KEY, entity TEXT NOT NULL, body TEXT NOT NULL, first_snapshot INTEGER NOT NULL REFERENCES snapshots(id));
             CREATE TABLE IF NOT EXISTS sightings(snapshot INTEGER REFERENCES snapshots(id), version TEXT REFERENCES versions(id), metadata TEXT NOT NULL, PRIMARY KEY(snapshot,version));
+            CREATE INDEX IF NOT EXISTS sightings_by_version ON sightings(version,snapshot);
+            CREATE INDEX IF NOT EXISTS versions_by_entity ON versions(entity);
             CREATE TABLE IF NOT EXISTS feedback(id INTEGER PRIMARY KEY, fingerprint TEXT NOT NULL, body TEXT NOT NULL);
             CREATE TABLE IF NOT EXISTS cache(key TEXT PRIMARY KEY, body TEXT NOT NULL);
             CREATE TABLE IF NOT EXISTS question_index(id TEXT PRIMARY KEY, label TEXT NOT NULL);
@@ -173,10 +175,17 @@ class HistoryStore:
             for key in ('text', 'title', 'author', 'chapter'):
                 note[key] = redact_contacts(note[key])
         for entry in body['feedback']:
-            for key in ('explanation', 'question'):
+            for key in ('explanation', 'question', 'reviewed_explanation'):
                 if key in entry: entry[key] = redact_contacts(entry[key])
         body['input_digest'] = digest(body)
         return body
+
+    def export_versions(self):
+        rows = self.versions()
+        for note in rows:
+            for key in ('text', 'title', 'author', 'chapter'):
+                note[key] = redact_contacts(note[key])
+        return rows
 
     def feedback_log(self):
         return [json.loads(row[0]) for row in self.db.execute('SELECT body FROM feedback ORDER BY id')]
@@ -200,6 +209,7 @@ class HistoryStore:
         import re
         with self.db:
             for row in observations:
+                if row['voice'] != 'own': continue
                 # Called only after extraction validation. Identity is a normalized label,
                 # not a claim that semantic synonyms have been exhaustively merged.
                 key = re.sub(r'[^\w\u4e00-\u9fff]', '', row['question']).casefold()

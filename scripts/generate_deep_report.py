@@ -60,10 +60,19 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
     parser.add_argument("--analysis-input", type=Path, help="Reuse a prepared bundle without WeRead calls or .env loading.")
     parser.add_argument("--analysis-result", type=Path, help="Validate and render host/API insight JSON with --analysis-input.")
     parser.add_argument("--analysis-mode", choices=["rules", "llm"], default="rules")
+    parser.add_argument('--analysis-focus', choices=['profile', 'evolution'], default='profile')
+    parser.add_argument('--history-dir', type=Path, default=Path('.weread-history'))
+    parser.add_argument('--evolution-report', type=Path, help='Offline validated trajectory report; no .env or WeRead requests.')
     parser.add_argument("--llm-max-notes", type=int, help="Stratified whole-note selection before fragmentation.")
     parser.add_argument("--llm-fragment-chars", type=int, default=2000)
     add_model_args(parser)
     args = parser.parse_args(argv)
+    if args.evolution_report and args.analysis_focus != 'evolution':
+        parser.error('--evolution-report requires --analysis-focus evolution')
+    if args.analysis_focus == 'evolution' and (args.analysis_input or args.analysis_result or args.export_analysis_bundle or args.analysis_mode == 'llm'):
+        parser.error('Evolution uses its versioned host protocol; use evolution.py for offline inputs')
+    if args.analysis_focus == 'evolution' and args.llm_max_notes is not None:
+        parser.error('Evolution does not support --llm-max-notes; use explicit collection/request budgets')
     if args.analysis_result and not args.analysis_input:
         parser.error("--analysis-result requires the original --analysis-input bundle")
     if args.analysis_result and args.analysis_mode == "llm":
@@ -79,6 +88,8 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
 
 def main(argv: Optional[List[str]] = None) -> int:
     args = parse_args(argv)
+    if args.analysis_focus == 'evolution':
+        return evolution_main(args)
     out_dir = Path(args.output_dir).resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
     bundle = None
@@ -146,6 +157,40 @@ def main(argv: Optional[List[str]] = None) -> int:
     for path in written:
         print(path)
     return exit_code
+
+
+def evolution_main(args):
+    if __package__:
+        from .history import HistoryStore
+        from .evolution import pending_report, write_reports
+        from .evolution_analysis import prepare_extraction, validate_report
+    else:
+        from history import HistoryStore
+        from evolution import pending_report, write_reports
+        from evolution_analysis import prepare_extraction, validate_report
+    import sqlite3
+    try:
+        title = args.title if args.title != '微信读书深度阅读画像' else '我的阅读观点演化档案'
+        if args.evolution_report:
+            report = validate_report(read_json(args.evolution_report))
+            current = None
+            if (args.history_dir / 'history.sqlite3').exists():
+                with HistoryStore(args.history_dir) as store: current = store.export()
+        else:
+            data = collect_data(args)
+            with HistoryStore(args.history_dir) as store:
+                store.ingest(data)
+                current = store.export()
+            plan = prepare_extraction(current, args.llm_max_input_chars, args.llm_max_calls,
+                                      args.llm_fragment_chars, args.llm_model or 'host-declared')
+            write_json(Path(args.output_dir) / 'evolution-extract-requests.json', plan)
+            report = pending_report(current)
+        paths = write_reports(report, current, args.output_dir, args.format, title)
+        for path in paths: print(path)
+        return 0
+    except (ValueError, OSError, KeyError, TypeError, sqlite3.Error) as exc:
+        sys.stderr.write(f'Evolution failed ({type(exc).__name__}); check outputs; success is not claimed.\n')
+        return 2
 
 
 if __name__ == "__main__":

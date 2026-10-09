@@ -87,6 +87,8 @@ def validate_history(history):
             require(isinstance(note[key], str), 'Invalid note text fields')
         require(note['text'].strip() and note['version_id'] not in seen and note['entity_id'] not in entities, 'Duplicate or empty note')
         require(note['effective_at'] is None or time_value(note['effective_at']) == note['effective_at'], 'Invalid effective date')
+        require(note['time_basis'] in {'created_version_unknown', 'source_modified', 'observed_edit', 'unknown'}
+                and note['visibility'] in {'observed', 'not_observed'}, 'Invalid chronology/visibility metadata')
         require(type(note['historical_version_unknown']) is bool, 'Invalid time certainty')
         seen.add(note['version_id'])
         entities.add(note['entity_id'])
@@ -217,6 +219,10 @@ def validate_response(result, request):
                 require(all(gates.values()) and all(n['identity'] == 'stable' for n in notes), 'Uncertain comparability or identity: use tension')
                 times = [n['effective_at'] for n in notes]
                 require(None not in times and len(set(times)) == 2, 'Evolution requires distinct known dates')
+            if row['relation'] in {'revision', 'reversal'}:
+                require(normalized(notes[0]['text']) != normalized(notes[1]['text'])
+                        and normalized(candidate['propositions'][0]['stance']) != normalized(candidate['propositions'][1]['stance']),
+                        'Identical expression cannot establish revision/reversal')
             require(not set(row['counter_evidence_ids']) & {q['evidence_id'] for q in row['quotes'] if evidence[q['evidence_id']]['version_id'] in candidate['version_ids']}, 'Support/counter overlap')
     return copy.deepcopy(result)
 
@@ -348,7 +354,7 @@ def prepare_comparison(history, extracted, max_input_chars=24000, max_requests=2
 
 
 def trajectory_fingerprint(trajectory):
-    return 'trajectory-' + digest([normalized(trajectory['question']), trajectory['relation'],
+    return 'trajectory-' + digest([normalized(trajectory['question']), trajectory['relation'], normalized(trajectory['explanation']),
                                    sorted(n['entity_id'] for n in trajectory['notes']),
                                    sorted(n['version_id'] for n in trajectory['notes'])])[:32]
 
@@ -378,8 +384,10 @@ def merge_comparisons(history, plan, results):
         # Prefer first validated occurrence; repeated fragment-level observations are not new trajectories.
         unique.setdefault(row['id'], row)
     complete = len(processed) == plan['coverage']['selected_candidates']
+    awaiting = (plan['coverage']['selected_candidates'] > 0 or
+                bool(history['notes']) and plan['extraction_coverage']['processed_fragments'] == 0)
     status = ('complete' if complete and processed else 'partial' if processed else
-              'not_requested' if history['notes'] and not accepted else 'abstained')
+              'not_requested' if awaiting and not accepted else 'abstained')
     return seal({'schema_version': 'evolution-report-1.0', 'history': history, 'plan': plan, 'results': results,
                  'status': status, 'trajectories': list(unique.values()), 'abstentions': abstentions,
                  'coverage': dict(plan['coverage'], extraction=plan['extraction_coverage'],

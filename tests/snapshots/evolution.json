@@ -1,0 +1,14 @@
+{
+  "status": "complete",
+  "available_notes": 5,
+  "complete_notes": 5,
+  "selected_candidates": 1,
+  "processed_candidates": 1,
+  "semantic_quality_verified": false,
+  "relation": "revision",
+  "question": "如何评价读完一本书？",
+  "titles": ["合成文学乙", "合成科学甲"],
+  "independent_notes": 2,
+  "quoted_texts": ["我现在认为完读不等于理解，还需要解释和检验。", "我认为读完一本书就足以证明理解。"],
+  "time_bases": ["created_version_unknown", "created_version_unknown"]
+}

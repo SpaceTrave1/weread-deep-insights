@@ -15,7 +15,7 @@ def extraction_result(request):
         if row['kind'] == 'personal_review':
             observations.append({'id': f'o-{index}', 'evidence_ids': [row['evidence_id']],
                 'question': '如何评价读完一本书？', 'topic': '阅读与理解', 'subject': '完读的价值',
-                'stance': '这是虚构的阅读判断', 'conditions': '学习场景', 'reason': '虚构理由',
+                'stance': row['text'], 'conditions': '学习场景', 'reason': '虚构理由',
                 'voice': 'own', 'quotes': [{'evidence_id': row['evidence_id'], 'text': row['text'][:30]}],
                 'limitations': ['合成样例，语义未评测。']})
     return {'schema_version': 'evolution-result-1.0', 'stage': 'extract', 'input_digest': request['input_digest'],
@@ -213,3 +213,39 @@ class EvolutionTests(OfflineTest):
         report = merge_comparisons(self.history, plan, [])
         self.assertEqual(report['status'], 'not_requested')
         self.assertEqual(report['coverage']['processed_candidates'], 0)
+
+    def test_complete_extraction_without_own_stance_abstains(self):
+        plan = prepare_extraction(self.history)
+        results = [dict(extraction_result(r), observations=[]) for r in plan['requests']]
+        extracted = merge_extractions(self.history, plan, results)
+        compared = prepare_comparison(self.history, extracted)
+        self.assertEqual(merge_comparisons(self.history, compared, [])['status'], 'abstained')
+
+    def test_synthetic_regression_snapshot(self):
+        import json
+        plan = self.pipeline()
+        report = merge_comparisons(self.history, plan, [comparison_result(r) for r in plan['requests']])
+        row = report['trajectories'][0]
+        snapshot = {'status': report['status'], 'available_notes': report['coverage']['extraction']['available_notes'],
+                    'complete_notes': report['coverage']['extraction']['complete_notes'],
+                    'selected_candidates': report['coverage']['selected_candidates'],
+                    'processed_candidates': report['coverage']['processed_candidates'],
+                    'semantic_quality_verified': report['semantic_quality_verified'],
+                    'relation': row['relation'], 'question': row['question'],
+                    'titles': sorted(n['title'] for n in row['notes']),
+                    'independent_notes': len({n['entity_id'] for n in row['notes']}),
+                    'quoted_texts': sorted(q['quote'] for q in row['quote_sources']),
+                    'time_bases': sorted(n['time_basis'] for n in row['notes'])}
+        fixture = Path(__file__).parent / 'snapshots' / 'evolution.json'
+        self.assertEqual(snapshot, json.loads(fixture.read_text(encoding='utf-8')))
+
+    def test_identical_expression_cannot_be_called_revision_or_reversal(self):
+        data = history_data()
+        data['notebooks']['bookNotes'][1]['reviews'][0]['content'] = data['notebooks']['bookNotes'][0]['reviews'][0]['content']
+        with tempfile.TemporaryDirectory(prefix='synthetic-identical-', dir=Path(__file__).parent) as directory:
+            with HistoryStore(Path(directory)) as store:
+                store.ingest(data)
+                history = store.export()
+                plan = self.pipeline(history)
+                with self.assertRaises(ValueError): merge_comparisons(history, plan, [comparison_result(r) for r in plan['requests']])
+                self.assertEqual(merge_comparisons(history, plan, [comparison_result(r, 'continuity') for r in plan['requests']])['trajectories'][0]['relation'], 'continuity')

@@ -14,6 +14,7 @@ def history_data():
     for b, book in enumerate(data['notebooks']['bookNotes']):
         for n, row in enumerate(book['reviews']):
             row.update(reviewId=f'fictional-review-{b}-{n}', createTime=1704067200 + b * 31536000)
+            row['content'] = ('我认为读完一本书就足以证明理解。' if b == 0 else '我现在认为完读不等于理解，还需要解释和检验。')
         for n, row in enumerate(book['underlines']):
             # Existing fixture repeats dict objects; give each an independent source identity.
             book['underlines'][n] = dict(row, bookmarkId=f'fictional-mark-{b}-{n}')
@@ -169,4 +170,30 @@ class HistoryTests(OfflineTest):
         row['createTime'] = '2099-01-01T00:00:00Z'
         self.store.ingest(data)
         self.assertTrue(any(n['time_basis'] == 'unknown' and n['kind'] == 'personal_review' for n in self.store.export()['notes']))
+
+    def test_version_export_is_masked_and_preserves_original_captured_version(self):
+        data = history_data()
+        data['notebooks']['bookNotes'][0]['reviews'][0]['content'] = '虚构联系方式 user@example.invalid 13800000000'
+        self.store.ingest(data)
+        data['generatedAt'] = '2026-02-01T00:00:00+08:00'
+        data['notebooks']['bookNotes'][0]['reviews'][0]['content'] = '虚构第二版'
+        self.store.ingest(data)
+        versions = self.store.export_versions()
+        self.assertEqual(len(versions), 6)
+        self.assertNotIn('user@example.invalid', str(versions))
+        self.assertNotIn('13800000000', str(versions))
+        self.assertTrue(any('[EMAIL]' in n['text'] for n in versions))
+
+    def test_unknown_schema_is_rejected_without_creating_new_tables(self):
+        import sqlite3
+        from contextlib import closing
+        with tempfile.TemporaryDirectory(prefix='synthetic-schema-', dir=Path(__file__).parent) as directory:
+            path = Path(directory)
+            with closing(sqlite3.connect(path / 'history.sqlite3')) as db:
+                db.execute('CREATE TABLE meta(key TEXT PRIMARY KEY,value TEXT)')
+                db.execute("INSERT INTO meta VALUES ('schema_version','999')")
+                db.commit()
+            with self.assertRaises(ValueError): HistoryStore(path)
+            with closing(sqlite3.connect(path / 'history.sqlite3')) as db:
+                self.assertEqual(db.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall(), [('meta',)])
 

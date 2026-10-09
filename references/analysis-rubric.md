@@ -6,6 +6,8 @@ For model-assisted interpretation, follow [the versioned evidence protocol](llm-
 
 ## Evidence Priority
 
+For longitudinal reading questions, use [reading-evolution.md](reading-evolution.md). Personal expressions must be comparable in question, object and conditions; edits are versions of one note, not independent evidence. Preserve chronology uncertainty, unresolved tension and attributed user feedback. Stable viewpoints and deepening are meaningful; do not force a reversal or a growth narrative.
+
 1. Personal reviews and thoughts from `/review/list/mine`.
 2. The user's underline choices from `/book/bookmarklist`.
 3. Reading behavior: time, categories, completion, notebook distribution, repeated authors/books.

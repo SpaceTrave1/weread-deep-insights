@@ -87,7 +87,17 @@ python scripts/generate_deep_report.py --analysis-input ./weread-reports/analysi
 
 完整参数、长数据宿主流程、结果协议与风险见 [大模型分析指南](references/llm-analysis.md)。尚未进行真实模型质量或账户集成评测，不能把结构校验通过视为分析准确率。
 
-## 输出
+## 阅读观点的长期演化（实验性）
+
+新增阅读历史、观点演化和跨书关联入口：保留本地笔记版本，发现延续、深化、扩展、修正/反转和待解释的张力；每项候选展示日期、原文、上下文与反证，用户反馈可持久保存。个人点评是立场证据，划线仅提供背景。
+
+```bash
+python scripts/generate_deep_report.py --analysis-focus evolution --output-dir weread-reports/evolution
+```
+
+此命令采集并准备宿主模型请求；模型尚未处理时不会生成观点变化结论。随后使用当前 Agent 完成抽取与比较，再离线导入并生成报告。原 CLI 默认行为、分析包 1.0、标准库依赖和报告文件名保留。完整步骤、时间与身份局限、反馈、清理、预算及合成验收见 [阅读演化指南](references/reading-evolution.md)。独立语义质量验收尚未完成。
+
+## 输出文件
 
 - `weread_deep_report.md`
 - `weread_deep_report.html`
