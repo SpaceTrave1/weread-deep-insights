@@ -27,6 +27,8 @@ The report generator collects:
 
 ## Optional Non-Profile Endpoints
 
+Model enhancement adds no WeRead endpoints. `--analysis-input` reuses a validated local bundle without WeRead requests or `.env` loading. Model HTTP attempts and declared text coverage are separate from the collection units described here; see [model analysis](llm-analysis.md). Default reporting never invokes a model endpoint.
+
 Do not include these in the personal profile by default:
 
 - `/store/search`: useful for resolving a title to `bookId`.

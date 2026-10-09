@@ -2,6 +2,8 @@
 
 Use this rubric when interpreting a user's WeRead data.
 
+For model-assisted interpretation, follow [the versioned evidence protocol](llm-analysis.md). Local statistics remain authoritative; semantic findings must carry original references, scope, rationale, limitations and any counter-evidence. Structural validation does not certify semantic support. Do not reinstate unsupported personality labels or fixed scores through the model.
+
 ## Evidence Priority
 
 1. Personal reviews and thoughts from `/review/list/mine`.

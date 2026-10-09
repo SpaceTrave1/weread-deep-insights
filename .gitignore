@@ -9,3 +9,9 @@ __pycache__/
 Thumbs.db
 weread-reports/
 weread-deep-insights-output/
+analysis_bundle*.json
+analysis_requests*.json
+llm_insights*.json
+llm_partials*.json
+.llm-cache/
+llm-evaluation-results/

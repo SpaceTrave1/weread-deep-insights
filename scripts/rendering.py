@@ -6,9 +6,11 @@ from typing import Any, Dict, List, Optional, Tuple
 if __package__:
     from .common import as_list, clean_text, truncate, seconds_text
     from .coverage import coverage_lines
+    from .enhanced_rendering import semantic_markdown, semantic_html
 else:
     from common import as_list, clean_text, truncate, seconds_text
     from coverage import coverage_lines
+    from enhanced_rendering import semantic_markdown, semantic_html
 
 def pct_bar(value: float, max_value: float) -> int:
     if value is None or max_value <= 0:
@@ -87,6 +89,8 @@ def render_markdown(report: Dict[str, Any]) -> str:
     lines.append(f"生成时间：{report['generatedAt']}")
     lines.append("")
     summary = report["profileSummary"]
+    if report.get("llmAnalysis"):
+        summary = {"label": "大模型增强阅读报告", "tagline": "语义结论、原始证据与本地统计分别呈现；分析范围见数据覆盖说明。"}
     lines.append(f"**画像摘要：{summary['label']}**")
     lines.append("")
     lines.append(summary["tagline"])
@@ -112,6 +116,8 @@ def render_markdown(report: Dict[str, Any]) -> str:
     lines.extend(f"- {line}" for line in coverage_lines(report["coverage"]))
     lines.append("")
     lines.append("## 阅读地图")
+    if report.get("llmAnalysis"):
+        lines[-1:] = [semantic_markdown(report['llmAnalysis']), "## 阅读地图"]
     lines.append("")
     if report["annual"]:
         lines.append("### 年度阅读")
@@ -646,6 +652,8 @@ def render_html(report: Dict[str, Any], template_path: Path) -> str:
     chunk.append('<h3>数据覆盖情况</h3>')
     chunk.extend(f'<p class="muted">{html.escape(line)}</p>' for line in coverage_lines(report["coverage"]))
     body.append(section("数据基础", "\n".join(chunk), "basis", "featured"))
+    if report.get("llmAnalysis"):
+        body.append(semantic_html(report['llmAnalysis']))
 
     chunk = []
     map_charts = render_map_charts(report)
@@ -743,11 +751,14 @@ def render_html(report: Dict[str, Any], template_path: Path) -> str:
     body.append(section("建议", "\n".join(chunk), "advice"))
 
     template = template_path.read_text(encoding="utf-8")
+    summary = report["profileSummary"]
+    if report.get("llmAnalysis"):
+        summary = {"label": "大模型增强阅读报告", "tagline": "语义结论、原始证据与本地统计分别呈现；分析范围见数据覆盖说明。"}
     return (
         template
         .replace("{{TITLE}}", html.escape(report["title"]))
-        .replace("{{PROFILE_LABEL}}", html.escape(report["profileSummary"]["label"]))
-        .replace("{{PROFILE_TAGLINE}}", html.escape(report["profileSummary"]["tagline"]))
+        .replace("{{PROFILE_LABEL}}", html.escape(summary["label"]))
+        .replace("{{PROFILE_TAGLINE}}", html.escape(summary["tagline"]))
         .replace("{{SUBTITLE}}", html.escape(f"生成时间：{report['generatedAt']}。{report['coverage']['scope']}。"))
         .replace("{{BODY}}", "\n".join(body))
     )

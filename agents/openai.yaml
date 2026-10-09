@@ -1,4 +1,4 @@
 interface:
   display_name: "WeRead Deep Insights"
-  short_description: "基于全量微信读书记录和笔记生成 HTML/Markdown 阅读画像、信息茧房和书单建议"
-  default_prompt: "Use $weread-deep-insights to export my WeRead data and generate a deep reading profile report."
+  short_description: "结合可靠统计、覆盖说明和可选大模型语义分析生成有证据的阅读报告"
+  default_prompt: "Use $weread-deep-insights to prepare my visible WeRead records, analyze selected evidence with the current host model, validate the citations, and render a scoped HTML/Markdown report."

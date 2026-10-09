@@ -71,6 +71,7 @@ class OfflineTest(unittest.TestCase):
     def setUp(self):
         self.offline_guards = []
         for guard in (patch("urllib.request.urlopen", side_effect=AssertionError("Network forbidden in tests")),
+                      patch("urllib.request.OpenerDirector.open", side_effect=AssertionError("Network forbidden in tests")),
                       patch.object(collection, "load_env", side_effect=AssertionError(".env forbidden in tests"))):
             self.offline_guards.append(guard.start())
             self.addCleanup(guard.stop)
