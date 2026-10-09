@@ -160,7 +160,13 @@ class HistoryTests(OfflineTest):
         data['generatedAt'] = '2026-03-01T00:00:00+08:00'
         data['notebooks']['bookNotes'][0]['reviews'][0]['content'] = original
         self.store.ingest(data)
-        row = next(n for n in self.store.export()['notes'] if n['entity_id'] == self.store.versions()[0]['entity_id'])
         edited_rows = [n for n in self.store.export()['notes'] if n['time_basis'] == 'observed_edit']
         self.assertTrue(any(n['effective_at'] == '2026-02-28T16:00:00+00:00' for n in edited_rows))
+
+    def test_future_or_inconsistent_source_time_cannot_establish_order(self):
+        data = history_data()
+        row = data['notebooks']['bookNotes'][0]['reviews'][0]
+        row['createTime'] = '2099-01-01T00:00:00Z'
+        self.store.ingest(data)
+        self.assertTrue(any(n['time_basis'] == 'unknown' and n['kind'] == 'personal_review' for n in self.store.export()['notes']))
 

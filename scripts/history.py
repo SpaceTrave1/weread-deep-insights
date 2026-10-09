@@ -50,19 +50,29 @@ class HistoryStore:
         self.directory.mkdir(parents=True, exist_ok=True)
         self.db = sqlite3.connect(self.directory / 'history.sqlite3')
         self.db.execute('PRAGMA foreign_keys=ON')
+        if self.db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='meta'").fetchone():
+            previous_schema = self.db.execute("SELECT value FROM meta WHERE key='schema_version'").fetchone()
+            if not previous_schema or previous_schema[0] not in {'1.0', '1.1'}:
+                self.close()
+                raise ValueError('Unsupported history schema')
         self.db.executescript('''
             CREATE TABLE IF NOT EXISTS meta(key TEXT PRIMARY KEY, value TEXT NOT NULL);
             CREATE TABLE IF NOT EXISTS snapshots(id INTEGER PRIMARY KEY, observed TEXT NOT NULL, coverage TEXT NOT NULL);
             CREATE TABLE IF NOT EXISTS versions(id TEXT PRIMARY KEY, entity TEXT NOT NULL, body TEXT NOT NULL, first_snapshot INTEGER NOT NULL REFERENCES snapshots(id));
             CREATE TABLE IF NOT EXISTS sightings(snapshot INTEGER REFERENCES snapshots(id), version TEXT REFERENCES versions(id), metadata TEXT NOT NULL, PRIMARY KEY(snapshot,version));
             CREATE TABLE IF NOT EXISTS feedback(id INTEGER PRIMARY KEY, fingerprint TEXT NOT NULL, body TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS cache(key TEXT PRIMARY KEY, body TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS question_index(id TEXT PRIMARY KEY, label TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS proposition_index(id TEXT PRIMARY KEY, version TEXT NOT NULL REFERENCES versions(id), question TEXT NOT NULL REFERENCES question_index(id), body TEXT NOT NULL);
         ''')
         with self.db:
-            self.db.execute('INSERT OR IGNORE INTO meta VALUES (?,?)', ('schema_version', '1.0'))
+            self.db.execute('INSERT OR IGNORE INTO meta VALUES (?,?)', ('schema_version', '1.1'))
             self.db.execute('INSERT OR IGNORE INTO meta VALUES (?,?)', ('dataset_id', str(uuid.uuid4())))
-        if self.db.execute("SELECT value FROM meta WHERE key='schema_version'").fetchone()[0] != '1.0':
+        if self.db.execute("SELECT value FROM meta WHERE key='schema_version'").fetchone()[0] not in {'1.0', '1.1'}:
             self.close()
             raise ValueError('Unsupported history schema')
+        with self.db:
+            self.db.execute("UPDATE meta SET value='1.1' WHERE key='schema_version'")
         self.dataset_id = self.db.execute("SELECT value FROM meta WHERE key='dataset_id'").fetchone()[0]
 
     def __enter__(self):
@@ -133,6 +143,8 @@ class HistoryStore:
                 effective, basis = body['modified_at'], 'source_modified'
             else:
                 effective, basis = body['created_at'], 'created_version_unknown' if body['created_at'] else 'unknown'
+            if (effective and effective > last_time) or (body['created_at'] and body['modified_at'] and body['modified_at'] < body['created_at']):
+                effective, basis = None, 'unknown'
             body.update(version_id=version, title=metadata['title'], author=metadata['author'],
                         fetch_state=metadata['fetch_state'], first_observed_at=first_time,
                         effective_at=effective, time_basis=basis, historical_version_unknown=True,
@@ -160,6 +172,9 @@ class HistoryStore:
         for note in body['notes']:
             for key in ('text', 'title', 'author', 'chapter'):
                 note[key] = redact_contacts(note[key])
+        for entry in body['feedback']:
+            for key in ('explanation', 'question'):
+                if key in entry: entry[key] = redact_contacts(entry[key])
         body['input_digest'] = digest(body)
         return body
 
@@ -170,10 +185,37 @@ class HistoryStore:
         with self.db:
             self.db.execute('INSERT INTO feedback(fingerprint,body) VALUES (?,?)', (fingerprint, canonical(body)))
 
+    def get_cached(self, key):
+        row = self.db.execute('SELECT body FROM cache WHERE key=?', (key,)).fetchone()
+        try:
+            return json.loads(row[0]) if row else None
+        except (ValueError, TypeError):
+            return None
+
+    def cache_response(self, key, result):
+        with self.db:
+            self.db.execute('INSERT OR REPLACE INTO cache VALUES (?,?)', (key, canonical(result)))
+
+    def index_propositions(self, observations):
+        import re
+        with self.db:
+            for row in observations:
+                # Called only after extraction validation. Identity is a normalized label,
+                # not a claim that semantic synonyms have been exhaustively merged.
+                key = re.sub(r'[^\w\u4e00-\u9fff]', '', row['question']).casefold()
+                question = 'question-' + digest([self.dataset_id, key])[:24]
+                self.db.execute('INSERT OR IGNORE INTO question_index VALUES (?,?)', (question, row['question']))
+                self.db.execute('INSERT OR REPLACE INTO proposition_index VALUES (?,?,?,?)',
+                                (row['id'], row['version_id'], question, canonical(row)))
+
+    def problem_index(self):
+        return [{'id': row[0], 'question': row[1], 'propositions': row[2]} for row in self.db.execute(
+            'SELECT q.id,q.label,COUNT(p.id) FROM question_index q LEFT JOIN proposition_index p ON p.question=q.id GROUP BY q.id ORDER BY q.id')]
+
     def clear(self):
         """Clear this database only; exports/reports/backups require separate removal."""
         with self.db:
             self.db.execute('PRAGMA secure_delete=ON')
-            for table in ('feedback', 'sightings', 'versions', 'snapshots'):
+            for table in ('proposition_index', 'question_index', 'cache', 'feedback', 'sightings', 'versions', 'snapshots'):
                 self.db.execute('DELETE FROM ' + table)
         self.db.execute('VACUUM')
