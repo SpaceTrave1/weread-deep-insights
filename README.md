@@ -141,3 +141,24 @@ python scripts/create_synthetic_demo.py
 ```
 
 评测集含 10 个虚构场景，区分开发集与留出集。语义质量字段保持未评分，待人工审阅；演示内容为固定编写的示例，不是真实模型质量评测。
+
+## 整合阅读手记网页
+
+观点时间线是完整报告的一部分。新的本地网页使用五个侧边栏模块：阅读总览、阅读地图、笔记与表达、我的思考、阅读启发。“我的思考”在主题视图与时间视图之间切换，同一问题可以跳转到有日期的原文档案。
+
+只复用已经生成的私有文件，离线整合，不加载 `.env`，不请求微信读书或大模型接口：
+
+```bash
+python scripts/render_journal.py \
+  --input ./weread-reports/analysis_bundle.json \
+  --analysis-result ./weread-reports/llm_insights.json \
+  --history-input ./weread-reports/evolution-history.json \
+  --evolution-report ./weread-reports/evolution-report.json \
+  --output-dir ./weread-reports/reading-journal
+```
+
+只有 `--input` 是必需的。模型结果基于另一个选中证据包时，用 `--semantic-input` 指定当时的原包；不能把结果绑定到不同选择范围。`--basis-input` 可提供更新的 `basis/annual/coverage`，必须与 `--history-input` 的采集覆盖一致。分类、书籍排名、规则和建议仍注明原报告快照，语义分析显示其原证据包日期。`--context-input` 是可选的、按笔记 entity ID 索引的书中原文背景，不作为本人立场。
+
+输出自包含的 `index.html` 和保留基础分析及时间线的 `weread_deep_report.md`；支持 `--format html|markdown|both`。网页在浏览器本地搜索全部导入正文，每页展示 8 条。反馈导出为现有 `evolution.py feedback --input` 接受的三字段 JSON，由用户操作生成，尚未自动写入历史库。轨迹 ID 将反馈绑定到问题、原文版本和所审阅解释。原有生成器 CLI 和传统 HTML/Markdown 渲染方式保持不变。
+
+个人网页、导入材料、截图和反馈都应保存在忽略的私有输出目录，不提交到 GitHub。设计方向、模块映射与验收边界见 [阅读手记设计说明](references/reading-journal-design.md)。

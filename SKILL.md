@@ -73,6 +73,15 @@ See `references/llm-analysis.md` for commands, schema and budgets. Never bypass 
 7. When the user confirms, rejects or explains a candidate, save their attributed feedback through `evolution.py feedback`; retain their words and version binding. Changed sources need review. Related old feedback informs comparison but is not automatically confirmation of new content.
 8. Model/provider names are declarations: retain `host-declared` unless actually known. Prepared evaluation and fixed demos are synthetic, not real-model accuracy. Independent semantic acceptance remains pending until reviewed results meet the documented gate.
 
+## Integrated Reading Journal
+
+- When a user wants a complete reading report with the new editorial style, retain baseline statistics and deeper interpretations. Use five modules: overview, reading map, notes/expression, my thinking, reading inspiration. My thinking has theme and time views; the opinion timeline is not a replacement for the report.
+- Render existing validated private outputs with `python scripts/render_journal.py --input <baseline-bundle> --analysis-result <original-result> --history-input <history-export> --evolution-report <trajectory-report> --output-dir weread-reports/reading-journal`. Optional inputs may be omitted. Use `--semantic-input` when the result was bound to a different exact evidence selection. This command is offline, reads no credentials and makes no API requests.
+- Preserve snapshot dates and separate collection/model coverage. Newer basis input requires its matching history coverage. Book context is background, not personal agreement. Count fully processed personal reviews separately from processed underlines.
+- Keep the first five question archives visible, with extra archives expandable. Explain missing data and absent model results. Never infer "no change" from a missing timeline. Use descriptive reading concentration reminders instead of personality/ability scores.
+- The self-contained HTML includes local note search, responsive module navigation, keyboard-operable theme/time tabs, source disclosures and feedback export compatible with `evolution.py feedback`. Feedback files do not persist into the history store until imported. Preserve attributed feedback and version-review warnings.
+- Follow `references/reading-journal-design.md` for design and checks. Award-level quality is a design ambition, not a self-certified award. Never publish a personal report or push its notes/screenshots without explicit authorization for that destination.
+
 ## Important Rules
 
 - Do not mix public book reviews or recommendation data into the user's personal profile unless explicitly requested.
