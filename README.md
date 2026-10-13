@@ -8,7 +8,9 @@
 
 阅读手记采用侧边栏导航，将基础阅读统计、笔记与表达、主题关联和观点时间线整合到同一份报告中。
 
-![PC 版阅读手记网页示意图（全部为虚构数据）](assets/screenshots/reading-journal-desktop-demo.jpg)
+[![PC 版阅读手记网页示意图（全部为虚构数据）](assets/screenshots/reading-journal-desktop-demo.png)](assets/screenshots/reading-journal-desktop-demo.png)
+
+点击图片可查看高清版本（3840 × 3774，无损 PNG）。
 
 > 图片仅用于展示网页外观。阅读统计、书籍、点评与观点关系均为虚构示例，不含真实用户数据，也不代表实际模型分析结果。生成此样式的完整报告请参阅下方“整合阅读手记网页”。
 
