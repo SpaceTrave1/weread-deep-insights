@@ -39,6 +39,7 @@ Do not include these in the personal profile by default:
 
 ## Field Rules
 
+- Gateway requests currently report official skill version `1.0.5` (verified against the official public package on 2026-10-13). This version is separate from local evidence/model/history protocol versions. Future `upgrade_info` responses still stop collection; raising a version string is not a substitute for reviewing an updated API contract.
 - All reading time values from reading statistics and progress are seconds.
 - `/readdata/detail` supports fixed natural periods only: weekly, monthly, annually, overall.
 - `preferTime` is ordered from 06:00 through next-day 05:00.

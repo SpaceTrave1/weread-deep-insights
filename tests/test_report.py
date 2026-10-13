@@ -147,6 +147,21 @@ class BaselineTests(OfflineTest):
 
 
 class CollectionRegressionTests(OfflineTest):
+    def test_gateway_version_matches_official_contract_and_collection_metadata(self):
+        # Exercise the real request builder and collection flow with mock transport.
+        # Empty successful replies need neither credentials nor real user records.
+        with patch.object(collection, "load_env"), patch.dict("os.environ", {"WEREAD_API_KEY": "synthetic-token"}), patch.object(collection, "post_json", return_value={}) as post:
+            data = report.collect_data(report.parse_args(["--skip-progress", "--skip-book-info"]))
+        self.assertEqual(data["skillVersion"], "1.0.5")
+        self.assertGreaterEqual(post.call_count, 6)
+        for call in post.call_args_list:
+            body = call.args[1]
+            self.assertEqual(body["skill_version"], "1.0.5")
+            self.assertIn("api_name", body)
+            self.assertNotIn("params", body)
+        notebooks = next(call.args[1] for call in post.call_args_list if call.args[1]["api_name"] == "/user/notebooks")
+        self.assertEqual(notebooks["count"], 100)
+
     def test_page_limits_are_incomplete_and_retain_rows(self):
         for func, args, pages, expected in (
             (report.collect_reviews, ("fake",), [{"reviews": [{"review": {"content": f"合成{i}"}}], "hasMore": 1, "synckey": i + 1} for i in range(100)], 100),
